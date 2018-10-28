@@ -1,4 +1,4 @@
-﻿Shader "Example/Diffuse Simple" {
+﻿Shader "Test/Draw Circle" {
 	Properties{
 		_MainTex("Texture", 2D) = "white" { }
 		_Center("Center", Vector) = (0, 0, 0, 0)
@@ -19,12 +19,9 @@
 		float _Radius;
 		void surf(Input IN, inout SurfaceOutput o) {
 			float d = distance(_Center, IN.worldPos);
-			float ratio = saturate(d / _Radius);
-
-			if (ratio > 0.9)
-				o.Albedo = (0, 0, 0, 1);
-			else
-				o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
+			float dN = 1 - saturate(d / _Radius);
+			dN = step(0.25, dN) * step(dN, 0.3); // dN = 1 if 0.25 <= dN <= 0.3
+			o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb * (1 - dN) + half3(1, 1, 1) * dN;
 		}
 		ENDCG
 	}
